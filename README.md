@@ -3,7 +3,9 @@
 
 # features
 + super lightweight
-+ configuration hot load
++ configuration hot reload
++ support enable and disable the hot reload feature
++ support custom polling cycle
 + default value support
 
 # usage
@@ -19,7 +21,7 @@ import (
 )
 
 func main() {
-	c, err := config.NewConfig("test.conf")
+	c, err := config.NewConfig("test.conf",true,2)
 	if err != nil {
 		log.Fatal("error to new config:%v", err)
 	}

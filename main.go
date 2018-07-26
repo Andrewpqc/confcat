@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	c, err := config.NewConfig("test.conf")
+	c, err := config.NewConfig("test.conf", true,2)
 	if err != nil {
 		log.Fatal("error to new config:%v", err)
 	}

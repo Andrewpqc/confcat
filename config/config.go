@@ -17,6 +17,8 @@ type Config struct {
 	latestReloadTime int64
 	conf             map[string]string
 	rwLock           sync.RWMutex
+	hotload           bool
+	inspect_duration  int
 }
 
 func init() {
@@ -44,7 +46,7 @@ func (c *Config) parseFile(filename string) error {
 }
 
 func (c *Config) reload() {
-	ticker := time.NewTicker(3 * time.Second)
+	ticker := time.NewTicker(time.Duration(c.inspect_duration)*time.Second)
 	for _ = range ticker.C {
 		fileInfo, err := os.Stat(c.filename)
 		if err != nil {
@@ -90,13 +92,18 @@ func (c *Config) GetFloat(key string, defaultVal float64) (float64) {
 	return ft
 }
 
-func NewConfig(filename string) (Config, error) {
-	var c Config
-	c.conf = make(map[string]string, 512)
-	c.filename = filename
+func NewConfig(filename string,hotReloadenable bool,duration int) (Config, error) {
+	c:=Config{
+		filename:filename,
+		conf:make(map[string]string,512),
+		hotload:hotReloadenable,
+		inspect_duration:duration,
+		}
 	if err := c.parseFile(c.filename); err != nil {
 		return c, errors.New("new config error")
 	}
-	go c.reload()
+	if c.hotload {
+		go c.reload()
+	}
 	return c, nil
 }
